@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Connections — ColabConnect</title>
+  <link rel="stylesheet" href="/css/styles.css?v=6">
+  <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
+</head>
+<body>
+<div class="app-layout">
+
+  <div th:replace="~{layout :: left-panel}"></div>
+  <div class="main-content">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Connections</div>
+        <div class="page-subtitle">Project join requests and your network</div>
+      </div>
+      <div class="page-actions">
+        <a href="/projects.html" class="btn btn-primary"><box-icon name="folder" animation="tada-hover" color="currentColor" style="width: 16px; height: 16px;"></box-icon> Browse Projects</a>
+      </div>
+    </div>
+    <div class="page-body">
+      <div style="display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:20px">
+        <button class="auth-tab active" id="tab-incoming-btn" onclick="switchTab('incoming')">Incoming <span id="incoming-count" class="nav-badge" style="display:inline-flex;margin-left:6px">0</span></button>
+        <button class="auth-tab" id="tab-sent-btn" onclick="switchTab('sent')">Sent</button>
+        <button class="auth-tab" id="tab-connected-btn" onclick="switchTab('connected')">My Network</button>
+      </div>
+      <div id="tab-incoming" class="tab-panel"></div>
+      <div id="tab-sent" class="tab-panel" style="display:none"></div>
+      <div id="tab-connected" class="tab-panel" style="display:none"></div>
+    </div>
+  </div>
+</div>
+
+<script src="/js/app.js?v=6"></script>
+<script src="/js/connections.js"></script>
+<div th:replace="~{layout :: project-modal}"></div>
+<div th:replace="~{layout :: add-to-project-modal}"></div>
+</body>
+</html>

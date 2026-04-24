@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Discover — ColabConnect</title>
+  <link rel="stylesheet" href="/css/styles.css?v=5">
+  <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
+</head>
+<body>
+<div class="app-layout">
+
+  <div th:replace="~{layout :: left-panel}"></div>
+  <div class="main-content">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Discover People</div>
+        <div class="page-subtitle">Find collaborators that match your project needs</div>
+      </div>
+    </div>
+    <div class="page-body">
+      <!-- Filters -->
+      <div class="card mb-16">
+        <div class="filters-bar" style="margin:0">
+          <div class="search-bar">
+            <span class="search-icon"><box-icon name="group" animation="tada-hover" color="currentColor" style="width: 16px; height: 16px;"></box-icon></span>
+            <input type="text" id="search-input" placeholder="Search by name, skill, or role..." oninput="debounceSearch()">
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">Availability</label>
+            <select class="filter-select" id="filter-avail" onchange="doSearch()">
+              <option value="">All</option>
+              <option value="available">Available</option>
+              <option value="weekends">Weekends</option>
+              <option value="limited">Limited</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">Work Style</label>
+            <select class="filter-select" id="filter-style" onchange="doSearch()">
+              <option value="">All</option>
+              <option value="async-friendly">Async-Friendly</option>
+              <option value="collaborative">Collaborative</option>
+              <option value="structured">Structured</option>
+            </select>
+          </div>
+          <button class="btn btn-secondary btn-sm" onclick="clearFilters()">Clear</button>
+        </div>
+
+        <!-- Popular skills quick-filter -->
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+          <span class="text-sm text-secondary" style="margin-right:8px">Popular skills:</span>
+          <div style="display:inline-flex;flex-wrap:wrap;gap:6px" id="skill-filters">
+            <span class="tag" style="cursor:pointer" onclick="filterBySkill('Java')">Java</span>
+            <span class="tag" style="cursor:pointer" onclick="filterBySkill('Python')">Python</span>
+            <span class="tag" style="cursor:pointer" onclick="filterBySkill('React')">React</span>
+            <span class="tag" style="cursor:pointer" onclick="filterBySkill('Node.js')">Node.js</span>
+            <span class="tag" style="cursor:pointer" onclick="filterBySkill('ML/AI')">ML/AI</span>
+            <span class="tag" style="cursor:pointer" onclick="filterBySkill('AWS')">AWS</span>
+            <span class="tag" style="cursor:pointer" onclick="filterBySkill('Kotlin')">Kotlin</span>
+            <span class="tag" style="cursor:pointer" onclick="filterBySkill('Figma')">Figma</span>
+            <span class="tag" style="cursor:pointer" onclick="filterBySkill('Go')">Go</span>
+            <span class="tag" style="cursor:pointer" onclick="filterBySkill('Solidity')">Solidity</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="result-count" class="text-sm text-secondary mb-16"></div>
+      <div id="users-grid" class="user-grid">
+        <div class="loading"><div class="spinner"></div> Loading collaborators...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/js/app.js?v=6"></script>
+<script src="/js/discover.js"></script>
+<div th:replace="~{layout :: project-modal}"></div>
+<div th:replace="~{layout :: add-to-project-modal}"></div>
+</body>
+</html>

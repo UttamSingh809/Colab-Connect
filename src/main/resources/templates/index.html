@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ColabConnect — Find Your Perfect Collaborator</title>
+  <link rel="stylesheet" href="/css/styles.css?v=5">
+</head>
+<body>
+<div class="auth-page">
+  <div class="auth-brand">
+    <div class="logo">
+      <div class="logo-icon">C</div>
+      <div>
+        <h1>ColabConnect</h1>
+        <div class="tagline">Your collaboration network</div>
+      </div>
+    </div>
+    <div class="features">
+      <div class="feature">
+        <div class="feature-icon"><box-icon name="group" animation="tada-hover" color="currentColor" style="width: 16px; height: 16px;"></box-icon></div>
+        <div>
+          <h3>Discover Collaborators</h3>
+          <p>Find partners by skill, availability, and work style</p>
+        </div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon"><box-icon name="check-circle" animation="tada-hover" color="currentColor" style="width: 16px; height: 16px; vertical-align: middle;" type="solid"></box-icon></div>
+        <div>
+          <h3>Verified Portfolios</h3>
+          <p>GitHub-linked profiles with proven track records</p>
+        </div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon"><box-icon name="network-chart" animation="tada-hover" color="currentColor" style="width: 16px; height: 16px;"></box-icon></div>
+        <div>
+          <h3>Smart Matching</h3>
+          <p>Connect with people who match your project needs</p>
+        </div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon"><box-icon name="star" animation="tada-hover" color="currentColor" style="width: 16px; height: 16px;"></box-icon></div>
+        <div>
+          <h3>Private Endorsements</h3>
+          <p>Trust earned through verified collaborations</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="auth-form-container">
+    <div class="auth-form">
+      <h2>Welcome to ColabConnect</h2>
+      <p class="subtitle">Connect with talented collaborators for your next project</p>
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" onclick="switchTab('login')">Sign In</button>
+        <button class="auth-tab" onclick="switchTab('register')">Create Account</button>
+      </div>
+
+      <!-- Login Tab -->
+      <div class="tab-content active" id="tab-login">
+        <div id="login-error"></div>
+        <form onsubmit="handleLogin(event)">
+          <div class="form-group">
+            <label class="form-label">Email address</label>
+            <input type="email" id="login-email" class="form-input" placeholder="you@example.com" required autocomplete="email">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="password" id="login-password" class="form-input" placeholder="Your password" required autocomplete="current-password">
+          </div>
+          <button type="submit" class="btn btn-primary btn-full btn-lg" id="login-btn">Sign In</button>
+        </form>
+        <div style="margin-top:20px;text-align:center;font-size:13px;color:var(--text-secondary)">
+          Try demo: <strong>alex@example.com</strong> / <strong>password123</strong>
+        </div>
+      </div>
+
+      <!-- Register Tab -->
+      <div class="tab-content" id="tab-register">
+        <div id="register-error"></div>
+        <form onsubmit="handleRegister(event)">
+          <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input type="text" id="reg-name" class="form-input" placeholder="Your name" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email address</label>
+            <input type="email" id="reg-email" class="form-input" placeholder="you@example.com" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="password" id="reg-password" class="form-input" placeholder="Min 6 characters" required minlength="6">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Role / Title</label>
+            <input type="text" id="reg-title" class="form-input" placeholder="e.g. Full-Stack Developer">
+          </div>
+          <button type="submit" class="btn btn-primary btn-full btn-lg" id="register-btn">Create Account</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
+<script src="/js/app.js?v=5"></script>
+<script th:inline="none">
+  redirectIfLoggedIn();
+
+  function switchTab(tab) {
+    document.querySelectorAll('.auth-tab').forEach((t, i) => {
+      t.classList.toggle('active', (i === 0 && tab === 'login') || (i === 1 && tab === 'register'));
+    });
+    document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+    document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+  }
+
+  async function handleLogin(e) {
+    e.preventDefault();
+    const btn = document.getElementById('login-btn');
+    btn.disabled = true; btn.textContent = 'Signing in...';
+    const errorEl = document.getElementById('login-error');
+    errorEl.innerHTML = '';
+    const email = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
+    const { ok, data } = await apiFetch('/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) });
+    if (ok && data.success) {
+      Session.set(data.sessionToken, data.userId, data.name);
+      window.location.href = '/dashboard.html';
+    } else {
+      errorEl.innerHTML = `<div class="error-msg">${data.message || 'Login failed. Please try again.'}</div>`;
+      btn.disabled = false; btn.textContent = 'Sign In';
+    }
+  }
+
+  async function handleRegister(e) {
+    e.preventDefault();
+    const btn = document.getElementById('register-btn');
+    btn.disabled = true; btn.textContent = 'Creating account...';
+    const errorEl = document.getElementById('register-error');
+    errorEl.innerHTML = '';
+    const name = document.getElementById('reg-name').value;
+    const email = document.getElementById('reg-email').value;
+    const password = document.getElementById('reg-password').value;
+    const title = document.getElementById('reg-title').value;
+    const { ok, data } = await apiFetch('/auth/register', { method: 'POST', body: JSON.stringify({ name, email, password, title }) });
+    if (ok && data.success) {
+      Session.set(data.sessionToken, data.userId, data.name);
+      window.location.href = '/dashboard.html';
+    } else {
+      errorEl.innerHTML = `<div class="error-msg">${data.message || 'Registration failed.'}</div>`;
+      btn.disabled = false; btn.textContent = 'Create Account';
+    }
+  }
+</script>
+</body>
+</html>
+
+

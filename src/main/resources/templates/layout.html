@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title} + ' — ColabConnect'">ColabConnect</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css?v=6">
+  <script src="/webjars/sockjs-client/sockjs.min.js"></script>
+  <script src="/webjars/stomp-websocket/stomp.min.js"></script>
+  <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
+</head>
+<body>
+
+<!-- Global Navigation Rail -->
+<div th:fragment="nav" id="app-nav">
+    <div class="icon-rail">
+        <div class="rail-logo">C</div>
+        <nav class="rail-nav">
+            <a href="/dashboard" class="rail-item" th:classappend="${activePage == 'dashboard' ? 'active' : ''}" data-tooltip="Dashboard"><box-icon name="grid-alt" animation="tada-hover" color="currentColor" style="width: 18px; height: 18px;"></box-icon></a>
+            <a href="/discover" class="rail-item" th:classappend="${activePage == 'discover' ? 'active' : ''}" data-tooltip="Discover People"><box-icon name="group" animation="tada-hover" color="currentColor" style="width: 18px; height: 18px;"></box-icon></a>
+            <a href="/discover-projects" class="rail-item" th:classappend="${activePage == 'discover-projects' ? 'active' : ''}" data-tooltip="Discover Projects"><box-icon name="briefcase" animation="tada-hover" color="currentColor" style="width: 18px; height: 18px;"></box-icon></a>
+            <a href="/connections" class="rail-item" th:classappend="${activePage == 'connections' ? 'active' : ''}" data-tooltip="Connections" id="rail-conn"><box-icon name="network-chart" animation="tada-hover" color="currentColor" style="width: 18px; height: 18px;"></box-icon></a>
+            <a href="/projects" class="rail-item" th:classappend="${activePage == 'projects' ? 'active' : ''}" data-tooltip="My Projects"><box-icon name="folder" animation="tada-hover" color="currentColor" style="width: 18px; height: 18px;"></box-icon></a>
+            <a href="/chat" class="rail-item" th:classappend="${activePage == 'chat' ? 'active' : ''}" data-tooltip="Chat"><box-icon name="message-square" animation="tada-hover" color="currentColor" style="width: 18px; height: 18px;"></box-icon></a>
+            <a href="/profile" class="rail-item" th:classappend="${activePage == 'profile' ? 'active' : ''}" data-tooltip="My Profile"><box-icon name="user-circle" animation="tada-hover" color="currentColor" style="width: 18px; height: 18px;"></box-icon></a>
+        </nav>
+        <div class="rail-bottom">
+            <div class="rail-avatar" onclick="window.location='/profile'" th:title="${user != null ? user.name : ''}" th:text="${userInitials != null ? userInitials : '?'}">?</div>
+        </div>
+    </div>
+</div>
+
+<!-- Left Panel -->
+<div th:fragment="left-panel" id="app-panel" class="left-panel">
+    <div class="panel-header">
+        <div>
+            <div class="panel-title">ColabConnect</div>
+            <div class="text-sm text-secondary">Find your next collaborator</div>
+        </div>
+    </div>
+    <div class="panel-body">
+        <div class="section-header">Navigation</div>
+        <a href="/dashboard" class="nav-item" th:classappend="${activePage == 'dashboard' ? 'active' : ''}">
+            <span class="nav-icon"><box-icon name="grid-alt" animation="tada-hover" color="currentColor" style="width: 18px; height: 18px;"></box-icon></span>
+            <span class="nav-label">Dashboard</span>
+        </a>
+        <a href="/discover" class="nav-item" th:classappend="${activePage == 'discover' ? 'active' : ''}">
+            <span class="nav-icon"><box-icon name="group" animation="tada-hover" color="currentColor" style="width: 18px; height: 18px;"></box-icon></span>
+            <span class="nav-label">Discover People</span>
+        </a>
+        <a href="/discover-projects" class="nav-item" th:classappend="${activePage == 'discover-projects' ? 'active' : ''}">
+            <span class="nav-icon"><box-icon name="briefcase" animation="tada-hover" color="currentColor" style="width: 18px; height: 18px;"></box-icon></span>
+            <span class="nav-label">Discover Projects</span>
+        </a>
+        <a href="/connections" class="nav-item" th:classappend="${activePage == 'connections' ? 'active' : ''}">
+            <span class="nav-icon"><box-icon name="network-chart" animation="tada-hover" color="currentColor" style="width: 18px; height: 18px;"></box-icon></span>
+            <span class="nav-label">Connections</span>
+            <span class="nav-badge" id="panel-conn-badge" style="display:none">0</span>
+        </a>
+        <a href="/projects" class="nav-item" th:classappend="${activePage == 'projects' ? 'active' : ''}">
+            <span class="nav-icon"><box-icon name="folder" animation="tada-hover" color="currentColor" style="width: 18px; height: 18px;"></box-icon></span>
+            <span class="nav-label">My Projects</span>
+        </a>
+        <a href="/chat" class="nav-item" th:classappend="${activePage == 'chat' ? 'active' : ''}">
+            <span class="nav-icon"><box-icon name="message-square" animation="tada-hover" color="currentColor" style="width: 18px; height: 18px;"></box-icon></span>
+            <span class="nav-label">Chat</span>
+        </a>
+        <a href="/profile" class="nav-item" th:classappend="${activePage == 'profile' ? 'active' : ''}">
+            <span class="nav-icon"><box-icon name="user-circle" animation="tada-hover" color="currentColor" style="width: 18px; height: 18px;"></box-icon></span>
+            <span class="nav-label">My Profile</span>
+        </a>
+        <div class="divider"></div>
+        <div class="section-header">Account</div>
+        <div class="nav-item" onclick="logout()">
+            <span class="nav-icon"><box-icon name="log-out" animation="tada-hover" color="currentColor" style="width: 18px; height: 18px;"></box-icon></span>
+            <span class="nav-label">Sign Out</span>
+        </div>
+    </div>
+</div>
+
+<!-- Global Project Details Modal -->
+<div th:fragment="project-modal" class="modal-overlay" id="global-project-modal">
+    <div class="modal">
+        <div class="modal-header">
+            <div>
+                <div class="modal-title" id="pm-title">Project Details</div>
+                <div class="text-sm text-secondary" id="pm-status"></div>
+            </div>
+            <button class="btn-icon" onclick="closeModal('global-project-modal')"><box-icon name="x" animation="tada-hover" color="currentColor" style="width: 16px; height: 16px; vertical-align: middle;"></box-icon></button>
+        </div>
+        <div class="modal-body" style="padding-bottom:10px">
+            <div id="pm-desc" class="text-secondary" style="margin-bottom:16px;line-height:1.5"></div>
+            <div class="tags mb-16" id="pm-tags"></div>
+            <div class="divider"></div>
+            
+            <div class="section-header" style="padding-left:0;margin-bottom:12px">Members (<span id="pm-member-count">0</span>)</div>
+            <div id="pm-members-list" style="display:flex;flex-direction:column;gap:12px;margin-bottom:16px"></div>
+            
+            <!-- Add Member Block (Owner Only) -->
+            <div id="pm-add-member-block" style="display:none;background:var(--surface-alt);padding:16px;border-radius:var(--radius-lg);margin-top:16px">
+                <div style="font-size:13px;font-weight:600;margin-bottom:8px">Add a Connection</div>
+                <div style="display:flex;gap:8px;position:relative;align-items:flex-start">
+                    <div style="flex:1;position:relative">
+                        <input type="text" id="pm-add-user-search" class="form-input" placeholder="Search by name..." autocomplete="off">
+                        <input type="hidden" id="pm-add-user-id">
+                        <div id="pm-user-suggestions" style="display:none;position:absolute;top:100%;left:0;right:0;background:var(--bg-primary);border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:0 4px 12px rgba(0,0,0,0.1);z-index:100;max-height:200px;overflow-y:auto;margin-top:4px"></div>
+                    </div>
+                    <button class="btn btn-primary" onclick="addMemberToProject()" id="pm-add-btn" disabled>Add</button>
+                </div>
+                <div class="text-muted text-sm mt-8">Search for a connection's name to add them to your project.</div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button id="pm-chat-btn" class="btn btn-primary" style="display:none">Go to Chat</button>
+            <button class="btn btn-secondary" onclick="closeModal('global-project-modal')">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- Add to Project Modal -->
+<div th:fragment="add-to-project-modal" class="modal-overlay" id="add-to-project-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Add to Project</div>
+      <button class="btn-icon" onclick="closeModal('add-to-project-modal')"><box-icon name="x" animation="tada-hover" color="currentColor" style="width: 16px; height: 16px; vertical-align: middle;"></box-icon></button>
+    </div>
+    <div class="modal-body">
+      <p class="text-secondary" style="margin-bottom:12px">Add <strong id="atp-user-name"></strong> to one of your projects as a member.</p>
+      <div class="form-group">
+        <label class="form-label">Select Project</label>
+        <select id="atp-project-select" class="form-select">
+          <option value="">Loading projects...</option>
+        </select>
+      </div>
+      <div id="atp-already-member" style="display:none;color:var(--text-muted);font-size:12px;margin-top:6px"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('add-to-project-modal')">Cancel</button>
+      <button class="btn btn-primary" id="atp-confirm-btn" onclick="confirmAddToProject()">Add Member</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

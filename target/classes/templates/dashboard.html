@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — ColabConnect</title>
+  <link rel="stylesheet" href="/css/styles.css?v=5">
+  <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
+</head>
+<body>
+<div class="app-layout">
+
+  <div th:replace="~{layout :: left-panel}"></div>
+  <div class="main-content">
+    <div class="page-header">
+      <div>
+        <div class="page-title" id="welcome-msg">Dashboard</div>
+        <div class="page-subtitle">Overview of your collaboration activity</div>
+      </div>
+      <div class="page-actions">
+        <a href="/discover.html" class="btn btn-primary"><box-icon name="group" animation="tada-hover" color="currentColor" style="width: 16px; height: 16px;"></box-icon> Find Collaborators</a>
+      </div>
+    </div>
+    <div class="page-body">
+      <div id="dashboard-content"><div class="loading"><div class="spinner"></div> Loading...</div></div>
+    </div>
+  </div>
+</div>
+
+<script src="/js/app.js?v=5"></script>
+<script src="/js/dashboard.js"></script>
+<div th:replace="~{layout :: project-modal}"></div>
+</body>
+</html>
+
+
+
+
