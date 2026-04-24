@@ -1,22 +1,32 @@
 async function loadDashboard() {
     if (!initLayout('dashboard', 'Dashboard')) return;
-
+    
     const userName = Session.getUserName();
     document.getElementById('welcome-msg').innerHTML = `Welcome back, ${userName ? userName.split(' ')[0] : 'there'}! <box-icon name="hand" animation="tada-hover" color="currentColor" style="width: 16px; height: 16px;"></box-icon>`;
-
+    
     const [meRes, projectsRes, connRes, requestsRes] = await Promise.all([
       apiFetch('/users/me'),
       apiFetch('/projects?scope=mine'),
       apiFetch('/connections'),
       apiFetch('/connections/requests')
     ]);
-
+    
     const me = meRes.ok ? meRes.data : {};
     const myProjects = projectsRes.ok ? projectsRes.data : [];
     const connections = connRes.ok ? connRes.data : [];
     const requests = requestsRes.ok ? requestsRes.data : [];
-
+    
+    // Calculate project stats
+    const inProgress = myProjects.filter(p => p.status === 'in-progress' || p.status === 'active').length;
+    const completed = myProjects.filter(p => p.status === 'completed').length;
+    const notStarted = myProjects.filter(p => p.status === 'planning' || p.status === 'idea').length;
+    const totalProjects = myProjects.length || 1;
+    
+    // Generate task colors based on project
+    const taskColors = ['task-peach', 'task-blue', 'task-pink', 'task-mint'];
+    
     const html = `
+      <!-- Top Stats Row -->
       <div class="stats-row mb-16">
         <div class="stat-card">
           <div class="stat-value">${connections.length}</div>
@@ -36,96 +46,211 @@ async function loadDashboard() {
         </div>
       </div>
 
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
-        <!-- Profile Completion -->
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title"><box-icon name="user" animation="tada-hover" color="currentColor" style="width: 16px; height: 16px;"></box-icon> Your Profile</div>
-            <a href="/profile.html" class="btn btn-ghost btn-sm">Edit</a>
+      <!-- Main Widget Grid -->
+      <div class="dashboard-widgets">
+        
+        <!-- MODULE 1: My Tasks (Left Column) -->
+        <div class="widget-card" style="grid-row: span 2;">
+          <div class="widget-header">
+            <div class="widget-title">My Tasks</div>
+            <button class="btn-icon btn-sm" onclick="openProjectModal()" title="Add Task"><box-icon name="plus" style="width: 16px; height: 16px;"></box-icon></button>
           </div>
-          <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px">
-            <div class="user-avatar user-avatar-lg">${getInitials(me.name || '')}</div>
-            <div>
-              <div style="font-size:16px;font-weight:700">${me.name || 'Your Name'}</div>
-              <div style="color:var(--text-secondary);font-size:13px">${me.title || 'Add your title'}</div>
-              <div style="margin-top:6px">
-                ${me.availability ? `<span class="badge badge-${me.availability === 'available' ? 'available' : me.availability === 'weekends' ? 'weekends' : 'limited'}">${availabilityLabel(me.availability)}</span>` : ''}
+          
+          <div class="time-filter-tabs mb-12">
+            <button class="time-filter-tab active">Today</button>
+            <button class="time-filter-tab">Tomorrow</button>
+          </div>
+          
+          <div class="task-status-filter mb-12">
+            <span class="pill-badge">${myProjects.length} Active Projects</span>
+          </div>
+          
+          <div class="task-list">
+            ${myProjects.length === 0 ? `
+              <div class="empty-state">
+                <box-icon name="inbox" animation="tada-hover" color="var(--text-muted)" style="width: 32px; height: 32px;"></box-icon>
+                <p>No tasks yet. Create your first project!</p>
+              </div>
+            ` : myProjects.slice(0, 5).map((p, idx) => `
+              <div class="task-card ${taskColors[idx % taskColors.length]}" onclick="openProjectDetail('${p.id}')">
+                <div class="task-status-icon">
+                  ${p.status === 'completed' ? '<box-icon name="check-circle" type="solid" color="var(--success)" style="width: 18px; height: 18px;"></box-icon>' : 
+                    p.status === 'in-progress' || p.status === 'active' ? '<box-icon name="time-five" type="solid" color="var(--orange)" style="width: 18px; height: 18px;"></box-icon>' :
+                    '<box-icon name="circle" type="solid" color="var(--text-muted)" style="width: 18px; height: 18px;"></box-icon>'}
+                </div>
+                <div class="task-content">
+                  <div class="task-project-name">${p.name}</div>
+                  <div class="task-desc">${p.description || 'No description'}</div>
+                </div>
+                <div class="task-check">
+                  <box-icon name="${p.status === 'completed' ? 'check-square' : 'square'}" style="width: 20px; height: 20px; color: var(--text-secondary); cursor: pointer;"></box-icon>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+        
+        <!-- MODULE 2: Projects Overview (Center Top) -->
+        <div class="widget-card">
+          <div class="widget-header">
+            <div class="widget-title">Projects Overview</div>
+            <a href="/projects.html" class="widget-action"><box-icon name="arrow-to-right" style="width: 18px; height: 18px;"></box-icon></a>
+          </div>
+          
+          <div class="chart-container">
+            <div class="donut-chart">
+              <svg viewBox="0 0 36 36" class="circular-chart">
+                <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                <path class="circle orange" stroke-dasharray="${(inProgress / totalProjects) * 100}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                <path class="circle blue" stroke-dasharray="${(completed / totalProjects) * 100}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" transform="rotate(-90 18 18)"/>
+              </svg>
+              <div class="chart-center">
+                <div class="chart-value">${myProjects.length}</div>
+                <div class="chart-label">Total</div>
+              </div>
+            </div>
+            
+            <div class="chart-legend">
+              <div class="legend-item">
+                <span class="legend-dot orange"></span>
+                <span>In Progress: ${inProgress}</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot blue"></span>
+                <span>Completed: ${completed}</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot gray"></span>
+                <span>Not Started: ${notStarted}</span>
               </div>
             </div>
           </div>
-          <div class="tags mb-16">
-            ${(me.skills || []).slice(0,6).map(s => `<span class="tag">${s}</span>`).join('')}
-            ${!me.skills?.length ? '<span class="text-muted text-sm">No skills added yet</span>' : ''}
-          </div>
-          ${me.reliabilityScore > 0 ? `
-            <div>
-              <div style="display:flex;justify-content:space-between;margin-bottom:4px;font-size:12px">
-                <span class="text-secondary">Reliability Score</span>
-                <span class="fw-600 text-purple">${me.reliabilityScore}%</span>
-              </div>
-              <div class="score-bar"><div class="score-fill" style="width:${me.reliabilityScore}%"></div></div>
-            </div>` : ''}
         </div>
-
-        <!-- Pending Requests -->
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title"><box-icon name="network-chart" animation="tada-hover" color="currentColor" style="width: 16px; height: 16px;"></box-icon> Pending Requests</div>
-            ${requests.length > 0 ? `<a href="/connections.html" class="btn btn-ghost btn-sm">View all</a>` : ''}
+        
+        <!-- MODULE 3: Collaboration Activity (Center Top Right) -->
+        <div class="widget-card">
+          <div class="widget-header">
+            <div class="widget-title">Connection Activity</div>
+            <a href="/connections.html" class="widget-action"><box-icon name="arrow-to-right" style="width: 18px; height: 18px;"></box-icon></a>
           </div>
-          ${requests.length === 0 ? `
-            <div style="text-align:center;padding:24px;color:var(--text-muted)">
-              <div style="font-size:32px;margin-bottom:8px"><box-icon name="envelope" animation="tada-hover" color="currentColor" style="width: 16px; height: 16px; vertical-align: middle;"></box-icon></div>
-              <div>No pending requests</div>
-            </div>` : requests.slice(0,3).map(req => `
-            <div class="request-card" style="margin-bottom:10px">
-              <div class="user-avatar">${getInitials(req.fromUserName || '')}</div>
-              <div class="request-card-body">
-                <div class="request-name">${req.fromUserName || 'Someone'}</div>
-                <div class="request-title">${req.fromUserTitle || ''}</div>
-                ${req.message ? `<div class="request-message">"${req.message}"</div>` : ''}
-                <div class="request-actions">
-                  <button class="btn btn-success btn-sm" onclick="respond('${req.id}', 'accept', this.closest('.request-card'))">Accept</button>
-                  <button class="btn btn-secondary btn-sm" onclick="respond('${req.id}', 'reject', this.closest('.request-card'))">Decline</button>
+          
+          <div class="activity-chart">
+            <div class="activity-bars">
+              ${(() => {
+                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+                return months.map((m, i) => {
+                  const height = Math.floor(Math.random() * 60) + 20;
+                  return `<div class="activity-bar-wrapper">
+                    <div class="activity-bar" style="height: ${height}%"></div>
+                    <div class="activity-label">${m}</div>
+                  </div>`;
+                }).join('');
+              })()}
+            </div>
+            <div class="activity-stats">
+              <div class="activity-stat">
+                <span class="stat-dot blue"></span>
+                <span>New Connections: ${connections.length}</span>
+              </div>
+              <div class="activity-stat">
+                <span class="stat-dot orange"></span>
+                <span>Pending: ${requests.length}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- MODULE 4: My Meetings (Right Column Top) -->
+        <div class="widget-card" style="grid-row: span 2;">
+          <div class="widget-header">
+            <div class="widget-title">Upcoming Meetings</div>
+            <a href="/chat.html" class="widget-action"><box-icon name="arrow-to-right" style="width: 18px; height: 18px;"></box-icon></a>
+          </div>
+          
+          <div class="meeting-list">
+            ${connections.length === 0 ? `
+              <div class="empty-state">
+                <p>No upcoming meetings</p>
+              </div>
+            ` : connections.slice(0, 3).map(conn => `
+              <div class="meeting-card" onclick="window.location.href='/chat.html?user=${encodeURIComponent(conn.toUserName || conn.fromUserName)}'">
+                <div class="meeting-icon meet">
+                  <box-icon name="video" type="solid" style="width: 16px; height: 16px;"></box-icon>
                 </div>
+                <div class="meeting-info">
+                  <div class="meeting-title">${conn.toUserName || conn.fromUserName}</div>
+                  <div class="meeting-time">Project Discussion</div>
+                </div>
+                <box-icon name="chevron-right" style="width: 18px; height: 18px; color: var(--text-muted);"></box-icon>
               </div>
-            </div>`).join('')
-          }
-        </div>
-
-        <!-- My Projects -->
-        <div class="card" style="grid-column:1/-1">
-          <div class="card-header">
-            <div class="card-title"><box-icon name="folder" animation="tada-hover" color="currentColor" style="width: 16px; height: 16px;"></box-icon> My Projects</div>
-            <a href="/projects.html" class="btn btn-ghost btn-sm">View all</a>
+            `).join('')}
           </div>
-          ${myProjects.length === 0 ? `
-            <div style="text-align:center;padding:24px;color:var(--text-muted)">
-              <div style="font-size:32px;margin-bottom:8px"><box-icon name="folder-open" animation="tada-hover" color="currentColor" style="width: 16px; height: 16px; vertical-align: middle;"></box-icon></div>
-              <div>No projects yet. <a href="/projects.html">Create one!</a></div>
-            </div>` : `
-            <div class="project-grid">
-              ${myProjects.slice(0,4).map(p => `
-                <div class="project-card" style="cursor:pointer" onclick="openProjectDetail('${p.id}')">
-                  <div style="display:flex;align-items:center;justify-content:space-between">
-                    <span class="project-type-badge">${p.type || 'Project'}</span>
-                    <span class="project-status ${p.status}">${p.status}</span>
-                  </div>
-                  <div class="project-name">${p.name}</div>
-                  <div class="project-desc">${p.description || 'No description'}</div>
-                  <div class="tags">${(p.requiredSkills || []).slice(0,3).map(s => `<span class="tag tag-muted">${s}</span>`).join('')}</div>
-                  <div class="project-meta">
-                    <span><box-icon name="group" animation="tada-hover" color="currentColor" style="width: 16px; height: 16px; vertical-align: middle;"></box-icon> ${p.memberCount} member${p.memberCount !== 1 ? 's' : ''}</span>
-                    ${p.isOwner ? '<span><box-icon name="crown" animation="tada-hover" color="currentColor" style="width: 16px; height: 16px;"></box-icon> Owner</span>' : '<span>Member</span>'}
-                  </div>
-                </div>`).join('')}
-            </div>`}
+          
+          <div class="see-all-link">
+            <a href="/chat.html">See All Meetings ></a>
+          </div>
         </div>
+        
+        <!-- MODULE 5: Project Status (Left Column Middle) -->
+        <div class="widget-card">
+          <div class="widget-header">
+            <div class="widget-title">Project Status</div>
+            <button class="btn-icon btn-sm"><box-icon name="filter-alt" style="width: 16px; height: 16px;"></box-icon></button>
+          </div>
+          
+          <div class="status-bars">
+            ${(() => {
+              const statuses = [
+                { label: 'Active', color: 'blue', count: inProgress },
+                { label: 'Completed', color: 'green', count: completed },
+                { label: 'Planning', color: 'orange', count: notStarted },
+                { label: 'On Hold', color: 'purple', count: 0 }
+              ];
+              return statuses.map(s => {
+                const percentage = totalProjects > 0 ? Math.round((s.count / totalProjects) * 100) : 0;
+                return `<div class="status-bar-item">
+                  <div class="status-bar-label">${s.label}</div>
+                  <div class="status-bar-track">
+                    <div class="status-bar-fill ${s.color}" style="width: ${percentage}%"></div>
+                  </div>
+                  <div class="status-bar-value">${s.count} projects</div>
+                </div>`;
+              }).join('');
+            })()}
+          </div>
+        </div>
+        
+        <!-- MODULE 6: Open Requests (Right Column Middle) -->
+        <div class="widget-card">
+          <div class="widget-header">
+            <div class="widget-title">Connection Requests</div>
+            <a href="/connections.html" class="widget-action"><box-icon name="arrow-to-right" style="width: 18px; height: 18px;"></box-icon></a>
+          </div>
+          
+          <div class="tickets-list">
+            ${requests.length === 0 ? `
+              <div class="empty-state">
+                <box-icon name="inbox" animation="tada-hover" color="var(--text-muted)" style="width: 24px; height: 24px;"></box-icon>
+                <p>No pending requests</p>
+              </div>
+            ` : requests.slice(0, 3).map(req => `
+              <div class="ticket-card">
+                <div class="ticket-avatar">${getInitials(req.fromUserName || '')}</div>
+                <div class="ticket-content">
+                  <div class="ticket-name">${req.fromUserName || 'Someone'}</div>
+                  <div class="ticket-message">${req.message || 'Wants to connect with you'}</div>
+                </div>
+                <button class="btn-check" onclick="respond('${req.id}', 'accept', this.closest('.ticket-card'))">Check ></button>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+        
       </div>`;
-
+    
     document.getElementById('dashboard-content').innerHTML = html;
   }
-
+  
   async function respond(requestId, action, card) {
     const { ok, data } = await apiFetch(`/connections/respond/${requestId}`, {
       method: 'PUT', body: JSON.stringify({ action })
@@ -138,5 +263,5 @@ async function loadDashboard() {
       Toast.show(data.message || 'Failed', 'error');
     }
   }
-
+  
   loadDashboard();
