@@ -1,1 +1,106 @@
-{"fa0dc968-788f-45d0-9436-e4941617b299":{"id":"fa0dc968-788f-45d0-9436-e4941617b299","name":"AgriOptima","description":"","ownerId":"35c0ffb1-1bc2-425c-8406-362a2b7e365f","memberIds":["35c0ffb1-1bc2-425c-8406-362a2b7e365f"],"requiredSkills":["JAVA EE","SQL","Web"],"status":"open","type":"Web App","createdAt":"2026-04-23T09:02:21.2285363","completionVotes":[],"completedAt":null}}
+{
+  "p1": {
+    "id": "p1",
+    "name": "AgriOptima",
+    "description": "A comprehensive web application for optimizing agricultural yields using data analytics and IoT sensor integration.",
+    "ownerId": "u1",
+    "memberIds": ["u1", "u4"],
+    "requiredSkills": ["Java EE", "SQL", "Web"],
+    "status": "in-progress",
+    "type": "Web App",
+    "createdAt": "2024-03-15T10:00:00",
+    "completionVotes": [],
+    "completedAt": null
+  },
+  "p2": {
+    "id": "p2",
+    "name": "HealthTrack Mobile",
+    "description": "Cross-platform mobile app for tracking fitness metrics, nutrition, and providing personalized health recommendations.",
+    "ownerId": "u2",
+    "memberIds": ["u2", "u3", "u7"],
+    "requiredSkills": ["React Native", "Node.js", "Figma"],
+    "status": "in-progress",
+    "type": "Mobile App",
+    "createdAt": "2024-04-01T14:30:00",
+    "completionVotes": [],
+    "completedAt": null
+  },
+  "p3": {
+    "id": "p3",
+    "name": "CloudScale Infrastructure",
+    "description": "Automated cloud infrastructure setup with Kubernetes orchestration and CI/CD pipelines for enterprise clients.",
+    "ownerId": "u5",
+    "memberIds": ["u5"],
+    "requiredSkills": ["AWS", "Kubernetes", "Terraform"],
+    "status": "open",
+    "type": "Infrastructure",
+    "createdAt": "2024-04-10T09:00:00",
+    "completionVotes": [],
+    "completedAt": null
+  },
+  "p4": {
+    "id": "p4",
+    "name": "DataViz Dashboard",
+    "description": "Interactive data visualization dashboard for business intelligence with real-time analytics and reporting features.",
+    "ownerId": "u6",
+    "memberIds": ["u6", "u8"],
+    "requiredSkills": ["Python", "TensorFlow", "Vue.js"],
+    "status": "in-progress",
+    "type": "Analytics",
+    "createdAt": "2024-03-20T11:00:00",
+    "completionVotes": [],
+    "completedAt": null
+  },
+  "p5": {
+    "id": "p5",
+    "name": "E-Commerce Platform",
+    "description": "Full-stack e-commerce solution with payment gateway integration, inventory management, and customer analytics.",
+    "ownerId": "u4",
+    "memberIds": ["u4", "u2", "u8"],
+    "requiredSkills": ["Spring Boot", "React", "SQL"],
+    "status": "completed",
+    "type": "Web App",
+    "createdAt": "2024-01-10T08:00:00",
+    "completionVotes": ["u1", "u3", "u5"],
+    "completedAt": "2024-03-01T16:00:00"
+  },
+  "p6": {
+    "id": "p6",
+    "name": "AI Chatbot Assistant",
+    "description": "Intelligent chatbot powered by machine learning for customer support automation with natural language processing.",
+    "ownerId": "u6",
+    "memberIds": ["u6"],
+    "requiredSkills": ["Python", "TensorFlow", "NLP"],
+    "status": "open",
+    "type": "AI/ML",
+    "createdAt": "2024-04-15T13:00:00",
+    "completionVotes": [],
+    "completedAt": null
+  },
+  "p7": {
+    "id": "p7",
+    "name": "Portfolio Website Builder",
+    "description": "Drag-and-drop website builder specifically designed for creatives to showcase their portfolios with customizable templates.",
+    "ownerId": "u3",
+    "memberIds": ["u3", "u8"],
+    "requiredSkills": ["Figma", "CSS3", "JavaScript"],
+    "status": "in-progress",
+    "type": "Web App",
+    "createdAt": "2024-04-05T10:30:00",
+    "completionVotes": [],
+    "completedAt": null
+  },
+  "p8": {
+    "id": "p8",
+    "name": "SecureAuth System",
+    "description": "Enterprise-grade authentication system with multi-factor authentication, SSO, and role-based access control.",
+    "ownerId": "u4",
+    "memberIds": ["u4", "u5"],
+    "requiredSkills": ["Java", "Spring Boot", "Security"],
+    "status": "open",
+    "type": "Enterprise",
+    "createdAt": "2024-04-18T09:15:00",
+    "completionVotes": [],
+    "completedAt": null
+  }
+}
