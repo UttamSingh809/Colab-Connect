@@ -1,40 +1,63 @@
-/* ColabConnect - Microsoft Teams-inspired Theme */
-@import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;500;600;700&display=swap');
+/* ColabConnect - Modern Dashboard Theme */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
+  /* Brand Colors */
   --brand-blue: #2563eb;
   --brand-blue-dark: #1d4ed8;
   --brand-blue-light: #dbeafe;
-  --teams-sidebar-bg: #0f172a;
-  --teams-sidebar-hover: rgba(255,255,255,0.1);
-  --teams-sidebar-active: rgba(255,255,255,0.2);
-  --bg: #f3f2f1;
+  
+  /* Sidebar */
+  --sidebar-bg: #0f172a;
+  --sidebar-hover: rgba(255,255,255,0.1);
+  --sidebar-active: rgba(255,255,255,0.2);
+  
+  /* Base Colors */
+  --bg: #f8f9fc;
   --surface: #ffffff;
-  --surface-alt: #f5f5f5;
-  --border: #e1dfdd;
-  --text: #242424;
-  --text-secondary: #616161;
-  --text-muted: #929292;
-  --available: #13a10e;
-  --weekends: #f7630c;
-  --limited: #c50f1f;
+  --surface-alt: #f5f7fa;
+  --border: #e8ecf1;
+  --text: #1a1a2e;
+  --text-secondary: #6b7280;
+  --text-muted: #9ca3af;
+  
+  /* Status Colors */
+  --available: #10b981;
+  --weekends: #f59e0b;
+  --limited: #ef4444;
   --accent: var(--brand-blue);
   --accent-hover: var(--brand-blue-dark);
-  --danger: #c50f1f;
-  --success: #13a10e;
-  --warning: #f7630c;
-  --shadow-sm: 0 1px 4px rgba(0,0,0,0.08);
-  --shadow-md: 0 2px 8px rgba(0,0,0,0.12);
-  --shadow-lg: 0 4px 16px rgba(0,0,0,0.16);
-  --radius: 4px;
-  --radius-lg: 8px;
+  --danger: #ef4444;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --info: #3b82f6;
+  --purple: #8b5cf6;
+  --orange: #f97316;
+  
+  /* Task Card Backgrounds */
+  --task-peach: #fef3e2;
+  --task-blue: #e0f2fe;
+  --task-pink: #fce7f3;
+  --task-mint: #d1fae5;
+  
+  /* Shadows - Soft and subtle */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.05);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.08);
+  --shadow-hover: 0 6px 20px rgba(0,0,0,0.1);
+  
+  /* Border Radius - More rounded */
+  --radius: 6px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-pill: 9999px;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html, body {
   height: 100%;
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
   font-size: 14px;
   color: var(--text);
   background: var(--bg);
@@ -49,7 +72,7 @@ html, body {
 }
 .auth-brand {
   width: 50%;
-  background: linear-gradient(135deg, var(--teams-sidebar-bg) 0%, var(--brand-blue-dark) 100%);
+  background: linear-gradient(135deg, var(--sidebar-bg) 0%, var(--brand-blue-dark) 100%);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -148,7 +171,7 @@ html, body {
 /* Icon Rail */
 .icon-rail {
   width: 48px;
-  background: var(--teams-sidebar-bg);
+  background: var(--sidebar-bg);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -173,7 +196,7 @@ html, body {
 .rail-item {
   width: 40px;
   height: 40px;
-  border-radius: var(--radius);
+  border-radius: var(--radius-pill);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -184,8 +207,8 @@ html, body {
   text-decoration: none;
   font-size: 18px;
 }
-.rail-item:hover { background: var(--teams-sidebar-hover); color: rgba(255,255,255,0.9); }
-.rail-item.active { background: var(--teams-sidebar-active); color: white; }
+.rail-item:hover { background: var(--sidebar-hover); color: rgba(255,255,255,0.9); }
+.rail-item.active { background: var(--sidebar-active); color: white; }
 .rail-item.active::before { content: ''; position: absolute; left: -4px; top: 50%; transform: translateY(-50%); width: 3px; height: 24px; background: white; border-radius: 0 3px 3px 0; }
 .rail-badge { position: absolute; top: 4px; right: 4px; width: 14px; height: 14px; background: var(--danger); border-radius: 50%; font-size: 9px; font-weight: 700; color: white; display: flex; align-items: center; justify-content: center; }
 .rail-bottom { margin-top: auto; display: flex; flex-direction: column; align-items: center; gap: 8px; padding-bottom: 8px; }
@@ -266,15 +289,59 @@ html, body {
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-xl);
   padding: 20px;
   box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.2s, transform 0.2s;
 }
+.card:hover { box-shadow: var(--shadow-md); }
 .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-.card-title { font-size: 15px; font-weight: 600; }
+.card-title { 
+  font-size: 15px; 
+  font-weight: 700; 
+  display: flex; 
+  align-items: center; 
+  gap: 8px;
+}
 .card-grid { display: grid; gap: 16px; }
 .card-grid-2 { grid-template-columns: repeat(2, 1fr); }
 .card-grid-3 { grid-template-columns: repeat(3, 1fr); }
+
+/* Dashboard Widget Cards - Inspired Design */
+.dashboard-widgets {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.widget-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s;
+}
+.widget-card:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-2px);
+}
+.widget-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.widget-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+}
+.widget-action {
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color 0.15s;
+}
+.widget-action:hover { color: var(--brand-blue); }
 
 /* ===================== USER CARDS ===================== */
 .user-card {
@@ -353,10 +420,246 @@ html, body {
 .badge-limited { background: #fde7e9; color: var(--danger); }
 
 /* ===================== STATS ===================== */
-.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; text-align: center; }
-.stat-value { font-size: 28px; font-weight: 700; color: var(--brand-blue); }
-.stat-label { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+.stats-row { 
+  display: grid; 
+  grid-template-columns: repeat(4, 1fr); 
+  gap: 16px; 
+  margin-bottom: 20px;
+}
+.stat-card { 
+  background: var(--surface); 
+  border: 1px solid var(--border); 
+  border-radius: var(--radius-xl); 
+  padding: 20px; 
+  text-align: center;
+  transition: all 0.2s;
+}
+.stat-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+.stat-value { 
+  font-size: 28px; 
+  font-weight: 700; 
+  color: var(--brand-blue); 
+}
+.stat-label { 
+  font-size: 12px; 
+  color: var(--text-secondary); 
+  margin-top: 4px; 
+}
+
+/* ===================== TIME FILTER TABS ===================== */
+.time-filter-tabs {
+  display: flex;
+  gap: 8px;
+  background: var(--surface-alt);
+  padding: 4px;
+  border-radius: var(--radius-pill);
+  width: fit-content;
+}
+.time-filter-tab {
+  padding: 6px 16px;
+  border-radius: var(--radius-pill);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s;
+  border: none;
+  background: transparent;
+}
+.time-filter-tab:hover {
+  color: var(--text);
+}
+.time-filter-tab.active {
+  background: var(--text);
+  color: white;
+  font-weight: 600;
+}
+
+/* ===================== TASK CARDS ===================== */
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.task-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: var(--radius-lg);
+  transition: all 0.2s;
+  cursor: pointer;
+}
+.task-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateX(4px);
+}
+.task-card.peach { background: var(--task-peach); }
+.task-card.blue { background: var(--task-blue); }
+.task-card.pink { background: var(--task-pink); }
+.task-card.mint { background: var(--task-mint); }
+.task-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.task-info { flex: 1; }
+.task-project { font-size: 13px; font-weight: 600; color: var(--text); }
+.task-desc { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+.task-check {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: transparent;
+}
+.task-check:hover { border-color: var(--brand-blue); }
+.task-check.checked {
+  background: var(--success);
+  border-color: var(--success);
+  color: white;
+}
+
+/* ===================== MEETING CARDS ===================== */
+.meeting-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.meeting-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--surface-alt);
+  border-radius: var(--radius-lg);
+  transition: all 0.15s;
+  cursor: pointer;
+}
+.meeting-card:hover {
+  background: var(--brand-blue-light);
+}
+.meeting-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.meeting-icon.meet { background: #e6f4ea; color: var(--success); }
+.meeting-icon.zoom { background: #dbeafe; color: var(--info); }
+.meeting-info { flex: 1; }
+.meeting-title { font-size: 13px; font-weight: 600; color: var(--text); }
+.meeting-time { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+.meeting-arrow {
+  color: var(--text-muted);
+  transition: transform 0.15s;
+}
+.meeting-card:hover .meeting-arrow {
+  transform: translateX(4px);
+  color: var(--brand-blue);
+}
+
+/* ===================== INVOICE STATUS BARS ===================== */
+.invoice-status-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.invoice-status-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.invoice-status-label {
+  width: 100px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+.invoice-status-bar {
+  flex: 1;
+  height: 8px;
+  background: var(--surface-alt);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+.invoice-status-fill {
+  height: 100%;
+  border-radius: var(--radius-pill);
+  transition: width 0.3s;
+}
+.invoice-status-fill.overdue { background: var(--purple); }
+.invoice-status-fill.not-paid { background: var(--danger); }
+.invoice-status-fill.partially-paid { background: var(--info); }
+.invoice-status-fill.fully-paid { background: var(--success); }
+.invoice-status-fill.draft { background: var(--warning); }
+.invoice-status-count {
+  width: 80px;
+  text-align: right;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* ===================== TICKET CARDS ===================== */
+.ticket-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.ticket-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--surface-alt);
+  border-radius: var(--radius-lg);
+  transition: all 0.15s;
+}
+.ticket-card:hover {
+  background: var(--brand-blue-light);
+}
+.ticket-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--brand-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: white;
+  flex-shrink: 0;
+}
+.ticket-info { flex: 1; }
+.ticket-name { font-size: 13px; font-weight: 600; color: var(--text); }
+.ticket-message { font-size: 12px; color: var(--text-secondary); margin-top: 4px; line-height: 1.4; }
+.ticket-action {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--brand-blue);
+  cursor: pointer;
+  transition: color 0.15s;
+}
+.ticket-action:hover { color: var(--brand-blue-dark); }
 
 /* ===================== FILTERS ===================== */
 .filters-bar {
@@ -435,7 +738,7 @@ html, body {
 .request-actions { display: flex; gap: 8px; margin-top: 12px; }
 
 /* ===================== PROFILE PAGE ===================== */
-.profile-hero { background: linear-gradient(135deg, var(--teams-sidebar-bg) 0%, var(--brand-blue-dark) 100%); padding: 32px 24px; color: white; border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
+.profile-hero { background: linear-gradient(135deg, var(--sidebar-bg) 0%, var(--brand-blue-dark) 100%); padding: 32px 24px; color: white; border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
 .profile-info { display: flex; align-items: flex-start; gap: 20px; }
 .profile-meta { flex: 1; }
 .profile-name { font-size: 24px; font-weight: 700; }
